@@ -93,7 +93,7 @@ int** ReadMatrixFromFile(const int& sizeTotal, const std::string fileName)
     return matrix;
 }
 
-int** MultiplyMatrices(int** matrix, int** secondMatrix, const int& sizeTotal, double& totalTime)
+int** MultiplyMatrices(int** matrix, int** secondMatrix, const int& sizeTotal, double& totalTime, bool& isCorrect)
 {
     int count = 10;
     totalTime = 0;
@@ -112,6 +112,11 @@ int** MultiplyMatrices(int** matrix, int** secondMatrix, const int& sizeTotal, d
         }
         clock_t end = clock();
         totalTime += double(end - start) / CLOCKS_PER_SEC;
+        if (isCorrect)
+        {
+            isCorrect = ckeckMultiplying(matrix, secondMatrix, sizeTotal, resultMatrix);
+            cout << isCorrect << "\n";
+        }
 
         for (int i = 0; i < sizeTotal; i++)
         {
@@ -132,6 +137,13 @@ int** MultiplyMatrices(int** matrix, int** secondMatrix, const int& sizeTotal, d
             }
         }
     }
+
+    if (isCorrect)
+    {
+        isCorrect = ckeckMultiplying(matrix, secondMatrix, sizeTotal, resultMatrix);
+        cout << isCorrect << "\n";
+    }
+
     return resultMatrix;
 }
 
@@ -156,21 +168,24 @@ void writeJsonToFile(const std::string& filePath, bool isCorrect, double timeTot
 
 int main()
 {
+    bool isCorrect = true;
     //const char* firstMatrixFileName = "firstMatrix.csv";
     //const char* secondMatrixFileName = "secondMatrix.csv";
     const std::string resultFileName = "result.json";
     const std::string resultMatrixFileName = "resultMatrix.csv";
-    int sizeTotal = 500;
+    const std::string firstMatrixFileName = "firstMatrix.csv";
+    const std::string secondMatrixFileName = "secondMatrix.csv";
+    int sizeTotal = 800;
     double totalTime = 0;
 
     int** matrix = CreateMatrix(sizeTotal);
     int** secondMatrix = CreateMatrix(sizeTotal);
-    //WriteMatrixToFile(matrix, sizeTotal, firstMatrixFileName);
-    //WriteMatrixToFile(secondMatrix, sizeTotal, secondMatrixFileName);
+    WriteMatrixToFile(matrix, sizeTotal, firstMatrixFileName);
+    WriteMatrixToFile(secondMatrix, sizeTotal, secondMatrixFileName);
     //int** readedMatrix = ReadMatrixFromFile(sizeTotal, firstMatrixFileName);
     //int** secondReadedMatrix = ReadMatrixFromFile(sizeTotal, secondMatrixFileName);
-    int** resultMatrix = MultiplyMatrices(matrix, secondMatrix, sizeTotal, totalTime);
-    bool isCorrect = ckeckMultiplying(matrix, secondMatrix, sizeTotal, resultMatrix);
+    int** resultMatrix = MultiplyMatrices(matrix, secondMatrix, sizeTotal, totalTime, isCorrect);
+    //bool isCorrect = ckeckMultiplying(matrix, secondMatrix, sizeTotal, resultMatrix);
 
     bool ckeckResult = ckeckMultiplying(matrix, secondMatrix, sizeTotal, resultMatrix);
     writeJsonToFile(resultFileName, isCorrect, totalTime, sizeTotal);
